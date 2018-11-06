@@ -36,7 +36,7 @@ public class QrCodeActivity extends BaseActivity {
         //屏幕的宽
         int width = getResources().getDisplayMetrics().widthPixels;
 
-        Bitmap qrCodeBitmap = EncodingUtils.createQRCode("我是智能管家", width / 2, width / 2,
+        Bitmap qrCodeBitmap = EncodingUtils.createQRCode("我是您的眼睛", width / 2, width / 2,
                 BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher));
         iv_qr_code.setImageBitmap(qrCodeBitmap);
     }

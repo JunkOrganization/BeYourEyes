@@ -10,6 +10,9 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.PixelFormat;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -34,7 +37,11 @@ import com.example.renlvda.MyEye.entity.Picture;
 import com.example.renlvda.MyEye.utils.L;
 import com.example.renlvda.MyEye.utils.UtilTools;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
 import cn.bmob.v3.BmobUser;
 import cn.bmob.v3.datatype.BmobFile;
@@ -48,7 +55,7 @@ import cn.bmob.v3.listener.SaveListener;
  * 包名:    com.example.renlvda.MyEye.fragment
  * 文件名:  PictureFragment
  * 创建者:  任律达
- * 修改者:  赵宁
+ * 修改者:  赵宁FT
  * 创建时间:  2017/11/2 19:50
  * 描述:    图片协助
  */
@@ -160,14 +167,51 @@ public class PictureFragment extends Fragment implements View.OnClickListener {
 //        File imagefile = new File(contentUri.getPath());
 
         mPicture.setDescription(description).setUsername(usernaem);
-        File file = new File("sdcard",PHOTO_IMAGE_ASSO_FILE_NAME);
-        Log.e(TAG, "send_photo: "+file.getAbsolutePath());
-//        if (file.exists()) {
+        File file = new File(Environment.getExternalStorageDirectory().getAbsolutePath(),PHOTO_IMAGE_ASSO_FILE_NAME);
+        if (file.exists()) {
             BmobFile bmobFile = new BmobFile(file);
             mPicture.setImage(bmobFile);
             Log.e(TAG, "imagefile != null " + bmobFile.getFilename());
-//        }
+        }
+        Toast.makeText(this.getContext(), "上传成功", Toast.LENGTH_LONG).show();
+        mImageView.setImageURI(null);
+        mEditText.setText("");
+//        Drawable drawable = mImageView.getDrawable();
+//        Bitmap bitmap = getBitmap(drawable);
 
+//        try {
+//            //create a file to write bitmap data
+//            File f = new File(Environment.getExternalStorageDirectory(), PHOTO_IMAGE_ASSO_FILE_NAME);
+//            f.createNewFile();
+//
+////Convert bitmap to byte array
+//
+//            ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//            bitmap.compress(Bitmap.CompressFormat.PNG, 0 /*ignored for PNG*/, bos);
+//            byte[] bitmapdata = bos.toByteArray();
+//
+////write the bytes in file
+//            FileOutputStream fos = new FileOutputStream(f);
+//            fos.write(bitmapdata);
+//            fos.flush();
+//            fos.close();
+//            if (file.exists()) {
+//                BmobFile bmobFile = new BmobFile(file);
+//                mPicture.setImage(bmobFile);
+//                Log.e(TAG, "imagefile != null " + bmobFile.getFilename());
+//            }
+//        } catch (IOException e) {
+//            Log.e(TAG, "IOException：" + e.getMessage() + "," + e.getStackTrace());
+//        } catch (Exception e) {
+//            Log.e(TAG, "Exception：" + e.getMessage() + "," + e.getStackTrace());
+//        }
+//        Log.e(TAG, "send_photo: "+file.getAbsolutePath());
+////        if (file.exists()) {
+//            BmobFile bmobFile = new BmobFile(file);
+//            mPicture.setImage(bmobFile);
+//            Log.e(TAG, "imagefile != null " + bmobFile.getFilename());
+////        }
+//
         mPicture.save(new SaveListener<String>() {
             @Override
             public void done(String objectId, BmobException e) {
@@ -180,6 +224,19 @@ public class PictureFragment extends Fragment implements View.OnClickListener {
             }
         });
 
+    }
+
+    private Bitmap getBitmap(Drawable drawable) {
+        Bitmap bitmap = Bitmap.createBitmap(
+                drawable.getIntrinsicWidth(),
+                drawable.getIntrinsicHeight(),
+                drawable.getOpacity() != PixelFormat.OPAQUE ? Bitmap.Config.ARGB_8888
+                        : Bitmap.Config.RGB_565);
+        Canvas canvas = new Canvas(bitmap);
+        //canvas.setBitmap(bitmap);
+        drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+        drawable.draw(canvas);
+        return bitmap;
     }
 
     /**
